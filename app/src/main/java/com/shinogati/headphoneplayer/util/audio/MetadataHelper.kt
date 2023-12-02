@@ -3,10 +3,15 @@ package com.shinogati.headphoneplayer.util.audio
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.annotation.WorkerThread
 import com.shinogati.headphoneplayer.domain.model.AudioMetadata
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.lang.Exception
 import javax.inject.Inject
 
 class MetadataHelper @Inject constructor(@ApplicationContext val context: Context) {
@@ -26,7 +31,32 @@ class MetadataHelper @Inject constructor(@ApplicationContext val context: Contex
     private var selectionArg = arrayOf("1")
     private val sortOder = "${MediaStore.Audio.AudioColumns.DISPLAY_NAME} ASC"
 
-    private fun getCursorData() : MutableList<AudioMetadata>{
+    @WorkerThread
+    fun getAudios(): List<AudioMetadata> {
+        return getCursorData()
+    }
+
+    @WorkerThread
+    fun getAlbumArt(context: Context, uri: Uri): Bitmap? {
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(context, uri)
+
+        val bitmap: Bitmap? = try {
+            val data = mmr.embeddedPicture
+            if (data != null) {
+                BitmapFactory.decodeByteArray(data, 0, data.size)
+            } else {
+                null
+            }
+        } catch (exp: Exception) {
+            null
+        } finally {
+            mmr.release()
+        }
+        return bitmap
+    }
+
+    private fun getCursorData(): MutableList<AudioMetadata> {
 
         val audioList = mutableListOf<AudioMetadata>()
 

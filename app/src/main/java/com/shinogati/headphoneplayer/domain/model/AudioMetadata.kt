@@ -2,7 +2,6 @@ package com.shinogati.headphoneplayer.domain.model
 
 import android.graphics.Bitmap
 import android.net.Uri
-import java.time.Duration
 
 data class AudioMetadata(
     val contentUri: Uri,

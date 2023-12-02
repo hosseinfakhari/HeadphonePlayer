@@ -23,7 +23,7 @@ class VisualizerHelper {
                 val durationSinceLastData = lastDataTimestamp?.let { now - it } ?: 0
                 if(lastDataTimestamp == null || durationSinceLastData > SAMPLING_INTERVAL) {
                     onData(
-                        VisualizerData(rawWaveform = waveform!!,
+                        VisualizerData(rawWaveform = waveform!!.clone(),
                             captureSize = CAPTURE_SIZE)
                     )
                     lastDataTimestamp = now
@@ -40,9 +40,9 @@ class VisualizerHelper {
 
         }
 
-    fun start(audioSessuinId: Int, onData: (VisualizerData) -> Unit) {
+    fun start(audioSessionId: Int = 0, onData: (VisualizerData) -> Unit) {
         stop()
-        visualizer = Visualizer(audioSessuinId).apply {
+        visualizer = Visualizer(audioSessionId).apply {
             enabled = false
             captureSize = CAPTURE_SIZE
             setDataCaptureListener(
